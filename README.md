@@ -9,6 +9,7 @@ A collection of Python notebooks and datasets for learning machine learning step
 | [Data preprocessing](01-data-preprocessing/data_preprocessing.ipynb) | Missing values, categorical encoding, train/test splitting, and feature scaling | Notebook available |
 | [Simple linear regression](02-simple-linear-regression/simple-linear-regression.ipynb) | Predicting salary from experience and visualizing the fitted regression line | Notebook available |
 | [Multiple linear regression](03-multiple-linear-regression/multiple_linear_regression.ipynb) | Predicting startup profit from spending and state, with categorical encoding | Notebook available |
+| [Polynomial regression](04-polynomial-regression/polynomial_regression.ipynb) | Predicting salary from position level; linear baseline and degree-2 polynomial feature preparation | In progress |
 
 ## Project structure
 
@@ -23,6 +24,9 @@ Machine-Learning-A-Z/
 ├── 03-multiple-linear-regression/
 │   ├── 50_Startups.csv
 │   └── multiple_linear_regression.ipynb
+├── 04-polynomial-regression/
+│   ├── Position_Salaries.csv
+│   └── polynomial_regression.ipynb
 └── README.md
 ```
 
@@ -57,7 +61,7 @@ python -m pip install numpy pandas matplotlib scikit-learn jupyterlab
 python -m jupyterlab
 ```
 
-Open a notebook from the topics table, select the Python kernel from your virtual environment, and run the cells from top to bottom. Start with data preprocessing, then work through simple and multiple linear regression. Each notebook loads its own dataset and can also be run independently.
+Open a notebook from the topics table, select the Python kernel from your virtual environment, and run the cells from top to bottom. Start with data preprocessing, then work through simple and multiple linear regression before exploring the polynomial regression notebook in progress. Each notebook loads its own dataset and can also be run independently.
 
 The CSV paths are relative to each notebook's directory. Keep the notebook beside its dataset and ensure its working directory is that topic folder if you encounter a `FileNotFoundError`.
 
@@ -97,14 +101,27 @@ The single-example prediction supplies the encoded state columns first, followed
 
 The regression notebooks demonstrate fitting and prediction; they do not yet calculate evaluation metrics such as R² or mean squared error.
 
+## Polynomial regression
+
+The fourth notebook uses `Position_Salaries.csv` to explore predicting `Salary` from `Level`. The descriptive `Position` column is excluded from the model inputs.
+
+Currently implemented:
+
+1. Load the dataset and separate position level (`X`) from salary (`y`).
+2. Fit a baseline `LinearRegression` model on the whole dataset.
+3. Generate degree-2 polynomial features with `PolynomialFeatures`.
+
+Fitting a regression model to the polynomial features, visualizing the fitted models (including a smoother curve), and predicting new salaries are still to be completed. The notebook currently uses the whole dataset without a train/test split.
+
 ## Datasets
 
-All three datasets are included in the repository; no separate download is needed.
+All four datasets are included in the repository; no separate download is needed.
 
 | Dataset | Rows | Columns | Purpose |
 | --- | --- | --- | --- |
 | [Data.csv](01-data-preprocessing/Data.csv) | 10 | `Country`, `Age`, `Salary`, `Purchased` | Practice handling missing values and categorical features; `Purchased` is the target |
 | [Salary_Data.csv](02-simple-linear-regression/Salary_Data.csv) | 30 | `YearsExperience`, `Salary` | Practice predicting salary from years of experience |
 | [50_Startups.csv](03-multiple-linear-regression/50_Startups.csv) | 50 | `R&D Spend`, `Administration`, `Marketing Spend`, `State`, `Profit` | Practice predicting profit from multiple numeric and categorical features |
+| [Position_Salaries.csv](04-polynomial-regression/Position_Salaries.csv) | 10 | `Position`, `Level`, `Salary` | Explore linear and polynomial salary prediction from position level |
 
 `Data.csv` contains one missing age and one missing salary, which the preprocessing notebook fills using column means.
