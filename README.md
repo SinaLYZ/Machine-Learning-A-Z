@@ -9,7 +9,8 @@ A collection of Python notebooks and datasets for learning machine learning step
 | [Data preprocessing](01-data-preprocessing/data_preprocessing.ipynb) | Missing values, categorical encoding, train/test splitting, and feature scaling | Notebook available |
 | [Simple linear regression](02-simple-linear-regression/simple-linear-regression.ipynb) | Predicting salary from experience and visualizing the fitted regression line | Notebook available |
 | [Multiple linear regression](03-multiple-linear-regression/multiple_linear_regression.ipynb) | Predicting startup profit from spending and state, with categorical encoding | Notebook available |
-| [Polynomial regression](04-polynomial-regression/polynomial_regression.ipynb) | Predicting salary from position level; linear baseline and degree-2 polynomial feature preparation | In progress |
+| [Polynomial regression](04-polynomial-regression/polynomial_regression.ipynb) | Comparing linear and degree-4 polynomial salary predictions and visualizing fitted curves | Notebook available |
+| [Support vector regression (SVR)](05-support-vector-regression/support_vector_regression.ipynb) | Scaling features and targets, fitting an RBF kernel model, and predicting salaries | Notebook available |
 
 ## Project structure
 
@@ -27,6 +28,9 @@ Machine-Learning-A-Z/
 ├── 04-polynomial-regression/
 │   ├── Position_Salaries.csv
 │   └── polynomial_regression.ipynb
+├── 05-support-vector-regression/
+│   ├── Position_Salaries.csv
+│   └── support_vector_regression.ipynb
 └── README.md
 ```
 
@@ -61,7 +65,7 @@ python -m pip install numpy pandas matplotlib scikit-learn jupyterlab
 python -m jupyterlab
 ```
 
-Open a notebook from the topics table, select the Python kernel from your virtual environment, and run the cells from top to bottom. Start with data preprocessing, then work through simple and multiple linear regression before exploring the polynomial regression notebook in progress. Each notebook loads its own dataset and can also be run independently.
+Open a notebook from the topics table, select the Python kernel from your virtual environment, and run the cells from top to bottom. Start with data preprocessing, then work through simple linear regression, multiple linear regression, polynomial regression, and support vector regression. Each notebook loads its own dataset and can also be run independently.
 
 The CSV paths are relative to each notebook's directory. Keep the notebook beside its dataset and ensure its working directory is that topic folder if you encounter a `FileNotFoundError`.
 
@@ -105,17 +109,29 @@ The regression notebooks demonstrate fitting and prediction; they do not yet cal
 
 The fourth notebook uses `Position_Salaries.csv` to explore predicting `Salary` from `Level`. The descriptive `Position` column is excluded from the model inputs.
 
-Currently implemented:
-
 1. Load the dataset and separate position level (`X`) from salary (`y`).
 2. Fit a baseline `LinearRegression` model on the whole dataset.
-3. Generate degree-2 polynomial features with `PolynomialFeatures`.
+3. Generate degree-4 polynomial features with `PolynomialFeatures` and fit a second `LinearRegression` model to those features.
+4. Visualize both models, including a smoother polynomial curve using a grid with step size `0.1`.
+5. Predict the salary for position level `6.5` with both models.
 
-Fitting a regression model to the polynomial features, visualizing the fitted models (including a smoother curve), and predicting new salaries are still to be completed. The notebook currently uses the whole dataset without a train/test split.
+The notebook uses the whole dataset without a train/test split.
+
+## Support vector regression (SVR)
+
+The fifth notebook uses its own copy of `Position_Salaries.csv` to predict `Salary` from `Level` with support vector regression:
+
+1. Load the dataset and reshape the salary target for scaling.
+2. Standardize position levels and salaries with separate `StandardScaler` instances.
+3. Fit an `SVR` model with an RBF kernel on the whole scaled dataset.
+4. Predict the salary for position level `6.5`, scaling the input and inverse-transforming the prediction to the original salary units.
+5. Plot the fitted model in the original units, including a smoother curve using a position-level grid with step size `0.1`.
+
+Like the polynomial example, this notebook uses the whole dataset without a train/test split; the plots illustrate the fit rather than performance on unseen data.
 
 ## Datasets
 
-All four datasets are included in the repository; no separate download is needed.
+All datasets are included in the repository; no separate download is needed. Polynomial regression and SVR each include a copy of `Position_Salaries.csv` in their topic folder.
 
 | Dataset | Rows | Columns | Purpose |
 | --- | --- | --- | --- |
@@ -123,5 +139,6 @@ All four datasets are included in the repository; no separate download is needed
 | [Salary_Data.csv](02-simple-linear-regression/Salary_Data.csv) | 30 | `YearsExperience`, `Salary` | Practice predicting salary from years of experience |
 | [50_Startups.csv](03-multiple-linear-regression/50_Startups.csv) | 50 | `R&D Spend`, `Administration`, `Marketing Spend`, `State`, `Profit` | Practice predicting profit from multiple numeric and categorical features |
 | [Position_Salaries.csv](04-polynomial-regression/Position_Salaries.csv) | 10 | `Position`, `Level`, `Salary` | Explore linear and polynomial salary prediction from position level |
+| [Position_Salaries.csv (SVR)](05-support-vector-regression/Position_Salaries.csv) | 10 | `Position`, `Level`, `Salary` | Practice feature and target scaling for support vector regression |
 
 `Data.csv` contains one missing age and one missing salary, which the preprocessing notebook fills using column means.
