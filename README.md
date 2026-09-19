@@ -2,13 +2,19 @@
 
 A collection of Python notebooks and datasets for learning machine learning step by step, starting with data preprocessing and progressing to regression.
 
+## Interactive demo
+
+`app.py` is a small Streamlit app with live predictions from the salary model (simple linear regression) and the startup profit model (multiple linear regression). Run it locally or deploy it for free — see [DEMO.md](DEMO.md).
+
+<!-- Once deployed: **Live demo:** https://<your-app>.streamlit.app -->
+
 ## Topics and progress
 
 | Topic | Contents | Status |
 | --- | --- | --- |
 | [Data preprocessing](01-data-preprocessing/data_preprocessing.ipynb) | Missing values, categorical encoding, train/test splitting, and feature scaling | Notebook available |
-| [Simple linear regression](02-simple-linear-regression/simple-linear-regression.ipynb) | Predicting salary from experience and visualizing the fitted regression line | Notebook available |
-| [Multiple linear regression](03-multiple-linear-regression/multiple_linear_regression.ipynb) | Predicting startup profit from spending and state, with categorical encoding | Notebook available |
+| [Simple linear regression](02-simple-linear-regression/simple-linear-regression.ipynb) | Predicting salary from experience, with test-set R²/MAE/RMSE, the fitted equation, and a residual plot | Notebook available |
+| [Multiple linear regression](03-multiple-linear-regression/multiple_linear_regression.ipynb) | Predicting startup profit from spending and state, with EDA, test-set metrics, a statsmodels significance summary, a VIF multicollinearity check, and backward elimination | Notebook available |
 | [Polynomial regression](04-polynomial-regression/polynomial_regression.ipynb) | Comparing linear and degree-4 polynomial salary predictions and visualizing fitted curves | Notebook available |
 | [Support vector regression (SVR)](05-support-vector-regression/support_vector_regression.ipynb) | Scaling features and targets, fitting an RBF kernel model, and predicting salaries | Notebook available |
 
@@ -31,12 +37,17 @@ Machine-Learning-A-Z/
 ├── 05-support-vector-regression/
 │   ├── Position_Salaries.csv
 │   └── support_vector_regression.ipynb
+├── models/                 # trained models saved by the notebooks (gitignored)
+├── app.py                  # Streamlit demo — see DEMO.md
+├── DEMO.md
+├── requirements.txt
+├── LICENSE
 └── README.md
 ```
 
 ## Getting started
 
-Use Python 3 and JupyterLab. The preprocessing notebook records Python 3.13.1 in its metadata; dependency versions are not currently pinned.
+Requires Python 3. Dependency versions are pinned in `requirements.txt`.
 
 From the repository root, create a virtual environment:
 
@@ -58,10 +69,10 @@ Activate it using the command for your shell:
 source .venv/bin/activate
 ```
 
-Install the notebook dependencies and launch JupyterLab:
+Install the dependencies and launch JupyterLab:
 
 ```sh
-python -m pip install numpy pandas matplotlib scikit-learn jupyterlab
+python -m pip install -r requirements.txt
 python -m jupyterlab
 ```
 
@@ -80,7 +91,7 @@ The first notebook demonstrates how to:
 5. Split the data into 80% training and 20% test sets with `random_state=1`.
 6. Standardize numeric features with `StandardScaler`, fitting the scaler on the training set and applying it to the test set.
 
-**Learning note:** The current example fits the imputer and categorical encoder before splitting the data. For model evaluation, split first and fit preprocessing on the training data only to avoid leaking information from the test set. A scikit-learn pipeline can help enforce this separation.
+**Learning note:** The current example fits the imputer and categorical encoder before splitting the data. For model evaluation, split first and fit preprocessing on the training data only to avoid leaking information from the test set. A scikit-learn pipeline can help enforce this separation. This still applies here and to the multiple linear regression notebook's categorical encoding — it's on the roadmap to fix.
 
 ## Simple linear regression
 
@@ -89,21 +100,24 @@ The second notebook uses `Salary_Data.csv` to predict `Salary` from `YearsExperi
 1. Split the data into 80% training and 20% test sets with `random_state=0`.
 2. Fit scikit-learn's `LinearRegression` model on the training set.
 3. Predict salaries for the test set.
-4. Plot the training and test observations alongside the fitted regression line using Matplotlib.
+4. Report R², MAE, and RMSE on the test set, and print the fitted equation (`Salary = intercept + slope * YearsExperience`).
+5. Plot the training and test observations alongside the fitted regression line, plus a residual plot to sanity-check the linear fit.
+6. Save the trained model to `models/simple_linear_regression.joblib` for the Streamlit demo.
 
 ## Multiple linear regression
 
 The third notebook uses `50_Startups.csv` to predict `Profit` from `R&D Spend`, `Administration`, `Marketing Spend`, and `State`:
 
-1. One-hot encode `State` using `ColumnTransformer` and `OneHotEncoder`, retaining the numeric spending features.
-2. Split the data into 80% training and 20% test sets with `random_state=0`.
-3. Fit a `LinearRegression` model and display predicted and actual test profits side by side.
-4. Predict profit for a single manually encoded example.
-5. Display the model's coefficients and intercept.
+1. Explore correlations between the numeric features and profit before modeling.
+2. One-hot encode `State` using `ColumnTransformer` and `OneHotEncoder`, retaining the numeric spending features.
+3. Split the data into 80% training and 20% test sets with `random_state=0`.
+4. Fit a `LinearRegression` model, report test-set R²/MAE/RMSE, and plot actual vs. predicted profit.
+5. Refit with `statsmodels.OLS` to inspect each coefficient's p-value and confidence interval — scikit-learn's `LinearRegression` doesn't expose these.
+6. Check for multicollinearity between the spending features with Variance Inflation Factor (VIF).
+7. Run backward elimination to find which features remain statistically significant once the others are accounted for (R&D Spend, in this dataset).
+8. Save the trained model and fitted encoder to `models/` for the Streamlit demo.
 
-The single-example prediction supplies the encoded state columns first, followed by the three spending values. New inputs must follow the same feature order as the training data. This notebook also fits its categorical encoder before the train/test split; the preprocessing guidance above applies here as well.
-
-The regression notebooks demonstrate fitting and prediction; they do not yet calculate evaluation metrics such as R² or mean squared error.
+The single-example prediction supplies the encoded state columns first, followed by the three spending values. New inputs must follow the same feature order as the training data.
 
 ## Polynomial regression
 
@@ -115,7 +129,7 @@ The fourth notebook uses `Position_Salaries.csv` to explore predicting `Salary` 
 4. Visualize both models, including a smoother polynomial curve using a grid with step size `0.1`.
 5. Predict the salary for position level `6.5` with both models.
 
-The notebook uses the whole dataset without a train/test split.
+The notebook uses the whole dataset without a train/test split, and doesn't yet report evaluation metrics — see the roadmap.
 
 ## Support vector regression (SVR)
 
@@ -142,3 +156,7 @@ All datasets are included in the repository; no separate download is needed. Pol
 | [Position_Salaries.csv (SVR)](05-support-vector-regression/Position_Salaries.csv) | 10 | `Position`, `Level`, `Salary` | Practice feature and target scaling for support vector regression |
 
 `Data.csv` contains one missing age and one missing salary, which the preprocessing notebook fills using column means.
+
+## License
+
+[MIT](LICENSE)
