@@ -1,21 +1,30 @@
 # Interactive demo
 
-`app.py` is a small [Streamlit](https://streamlit.io) app with two tabs: a salary predictor (simple linear regression) and a startup profit predictor (multiple linear regression). Both train on the same CSVs the notebooks use, so the numbers match.
+`app.py` provides five tabs: simple linear regression for salary, multiple linear regression for startup profit, polynomial regression, support vector regression, and decision tree regression.
 
-## Run it locally
+## Run locally
+
+From the repository root, with your virtual environment activated:
 
 ```sh
-pip install -r requirements.txt streamlit
-streamlit run app.py
+python -m pip install -r requirements.txt
+python -m streamlit run app.py
 ```
 
-It opens at `http://localhost:8501`.
+Open the URL printed in the terminal (usually `http://localhost:8501`). Use `Ctrl+C` to stop the server. Do not launch with `python app.py`; the interface and session state require the Streamlit runtime.
 
-## Deploy it for free
+The app trains and caches its models from the included CSVs. Saved models and prior notebook execution are not required. Dataset paths are resolved relative to `app.py`.
 
-1. Push this repo to GitHub (with `app.py` and `requirements.txt` at the root).
-2. Go to [share.streamlit.io](https://share.streamlit.io), sign in with GitHub, and click "New app."
-3. Point it at this repo, branch `main`, main file path `app.py`.
-4. Streamlit installs `requirements.txt` (add `streamlit` to it, or list it in a separate `packages` field) and gives you a public URL like `https://<your-app>.streamlit.app`.
+## Explore the models
 
-Add that URL — with a screenshot — near the top of the root `README.md`. A live, clickable demo is the single highest-leverage thing you can add to a portfolio repo like this one.
+- **Salary Predictor:** change years of experience to predict salary.
+- **Startup Profit Predictor:** change spending and state to predict profit. The categorical encoder is fitted only on training data.
+- **Polynomial Regression:** change position level to compare a degree-4 curve with a linear baseline.
+- **Support Vector Regression:** explore an RBF model with scaled inputs and targets; displayed predictions use original salary units.
+- **Decision Tree Regression:** explore the constant salary predictions within each tree leaf.
+
+The salary and startup models report held-out test-set R². Position-level models use all 10 rows, matching their notebooks, and report training R² only. Their charts illustrate fit, not generalization performance.
+
+## Hosting configuration
+
+For a Streamlit hosting service, use `app.py` as the entry point and install `requirements.txt`, which includes Streamlit. Include all five regression dataset folders with the app.
