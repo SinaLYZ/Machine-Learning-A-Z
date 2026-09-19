@@ -2,33 +2,6 @@
 
 A collection of Python notebooks and datasets for learning machine learning step by step, starting with data preprocessing and progressing to regression.
 
-## Interactive demo
-
-`app.py` is a Streamlit app with five interactive regression demos. Models train directly from the included CSVs; running the notebooks or generating saved model files first is not required.
-
-| Tab | Model | Inputs and features |
-| --- | --- | --- |
-| Salary Predictor | Simple linear regression | Years of experience, salary prediction, test-set R², and observed data |
-| Startup Profit Predictor | Multiple linear regression | Spending and state, profit prediction, and test-set R² |
-| Polynomial Regression | Degree-4 polynomial regression | Position level, salary prediction, fitted curve, and linear baseline |
-| Support Vector Regression | RBF SVR | Position level, feature and target scaling, salary prediction in dollars, and fitted curve |
-| Decision Tree Regression | Decision tree | Position level, salary prediction, and piecewise-constant fitted curve |
-
-With your virtual environment already activated, run these commands from the repository root:
-
-```sh
-python -m pip install -r requirements.txt
-python -m streamlit run app.py
-```
-
-Open the local URL printed in the terminal (usually `http://localhost:8501`). Launch with Streamlit: running `python app.py` produces missing `ScriptRunContext` warnings and does not start the web interface. Stop the server with `Ctrl+C`.
-
-The first two demos report R² on a held-out 20% test set. The three position-level demos match their notebooks by training on all 10 rows and display **training R²**, not a test-set score. Each includes a position-level slider, fitted curve, selected prediction, and expandable source data. These small course datasets are learning examples.
-
-See [DEMO.md](DEMO.md) for more details.
-
-<!-- Once deployed: **Live demo:** https://<your-app>.streamlit.app -->
-
 ## Topics and progress
 
 | Topic | Contents | Status |
@@ -39,6 +12,7 @@ See [DEMO.md](DEMO.md) for more details.
 | [Polynomial regression](04-polynomial-regression/polynomial_regression.ipynb) | Comparing linear and degree-4 polynomial salary predictions and visualizing fitted curves | Notebook available |
 | [Support vector regression (SVR)](05-support-vector-regression/support_vector_regression.ipynb) | Scaling features and targets, fitting an RBF kernel model, and predicting salaries | Notebook available |
 | [Decision tree regression](06-decision-tree-regression/decision_tree_regression.ipynb) | Fitting a decision tree to position salaries and visualizing piecewise-constant predictions | Notebook available |
+| [Random forest regression](07-random-forest-regression/random_forest_regression.ipynb) | Combining 10 decision trees to predict position salaries and visualizing the ensemble's predictions | Notebook available |
 
 ## Project structure
 
@@ -62,9 +36,10 @@ Machine-Learning-A-Z/
 ├── 06-decision-tree-regression/
 │   ├── Position_Salaries.csv
 │   └── decision_tree_regression.ipynb
+├── 07-random-forest-regression/
+│   ├── Position_Salaries.csv
+│   └── random_forest_regression.ipynb
 ├── models/                 # trained models saved by the notebooks (gitignored)
-├── app.py                  # Streamlit demo — see DEMO.md
-├── DEMO.md
 ├── requirements.txt
 ├── LICENSE
 └── README.md
@@ -101,7 +76,7 @@ python -m pip install -r requirements.txt
 python -m jupyterlab
 ```
 
-Open a notebook from the topics table, select the Python kernel from your virtual environment, and run the cells from top to bottom. Start with data preprocessing, then work through simple linear regression, multiple linear regression, polynomial regression, support vector regression, and decision tree regression. Each notebook loads its own dataset and can also be run independently.
+Open a notebook from the topics table, select the Python kernel from your virtual environment, and run the cells from top to bottom. Start with data preprocessing, then work through simple linear regression, multiple linear regression, polynomial regression, support vector regression, decision tree regression, and random forest regression. Each notebook loads its own dataset and can also be run independently.
 
 The CSV paths are relative to each notebook's directory. Keep the notebook beside its dataset and ensure its working directory is that topic folder if you encounter a `FileNotFoundError`.
 
@@ -116,7 +91,7 @@ The first notebook demonstrates how to:
 5. Split the data into 80% training and 20% test sets with `random_state=1`.
 6. Standardize numeric features with `StandardScaler`, fitting the scaler on the training set and applying it to the test set.
 
-**Learning note:** The current example fits the imputer and categorical encoder before splitting the data. For model evaluation, split first and fit preprocessing on the training data only to avoid leaking information from the test set. A scikit-learn pipeline can help enforce this separation. This still applies here and to the multiple linear regression notebook's categorical encoding. The app fits the startup encoder on its training split only.
+**Learning note:** The current example fits the imputer and categorical encoder before splitting the data. For model evaluation, split first and fit preprocessing on the training data only to avoid leaking information from the test set. A scikit-learn pipeline can help enforce this separation. This guidance also applies to the multiple linear regression notebook, which fits its startup categorical encoder before splitting.
 
 ## Simple linear regression
 
@@ -127,7 +102,7 @@ The second notebook uses `Salary_Data.csv` to predict `Salary` from `YearsExperi
 3. Predict salaries for the test set.
 4. Report R², MAE, and RMSE on the test set, and print the fitted equation (`Salary = intercept + slope * YearsExperience`).
 5. Plot the training and test observations alongside the fitted regression line, plus a residual plot to sanity-check the linear fit.
-6. Save the trained model to `models/simple_linear_regression.joblib` for reuse outside the notebook. The Streamlit app trains directly from the CSV data.
+6. Save the trained model to `models/simple_linear_regression.joblib` for reuse outside the notebook.
 
 ## Multiple linear regression
 
@@ -140,7 +115,7 @@ The third notebook uses `50_Startups.csv` to predict `Profit` from `R&D Spend`, 
 5. Refit with `statsmodels.OLS` to inspect each coefficient's p-value and confidence interval — scikit-learn's `LinearRegression` doesn't expose these.
 6. Check for multicollinearity between the spending features with Variance Inflation Factor (VIF).
 7. Run backward elimination to find which features remain statistically significant once the others are accounted for (R&D Spend, in this dataset).
-8. Save the trained model and fitted encoder to `models/` for reuse outside the notebook. The Streamlit app trains directly from the CSV data.
+8. Save the trained model and fitted encoder to `models/` for reuse outside the notebook.
 
 The single-example prediction supplies the encoded state columns first, followed by the three spending values. New inputs must follow the same feature order as the training data.
 
@@ -177,11 +152,22 @@ The sixth notebook uses `Position_Salaries.csv` to predict salary from position 
 3. Predict the salary at level `6.5`.
 4. Plot predictions on a dense grid to show the constant predictions within each tree leaf.
 
-The app reproduces this model and lets you explore fractional levels. A perfect training fit does not establish accuracy on unseen positions; this example has no held-out test set.
+A perfect training fit does not establish accuracy on unseen positions; this example has no held-out test set.
+
+## Random forest regression
+
+The seventh notebook uses `Position_Salaries.csv` to predict salary from position level with an ensemble of decision trees:
+
+1. Use `Level` as the feature and `Salary` as the target, excluding the descriptive position name.
+2. Fit `RandomForestRegressor(n_estimators=10, random_state=0)` on all 10 rows.
+3. Predict the salary at level `6.5`.
+4. Plot predictions on a grid with step size `0.01` to visualize the ensemble's piecewise-constant fitted curve.
+
+Like the other position-level notebooks, this example trains on the whole dataset without a held-out test set. It does not yet report evaluation metrics.
 
 ## Datasets
 
-All datasets are included in the repository; no separate download is needed. Polynomial regression, SVR, and decision tree regression each include a copy of `Position_Salaries.csv` in their topic folder.
+All datasets are included in the repository; no separate download is needed. Polynomial regression, SVR, decision tree regression, and random forest regression each include a copy of `Position_Salaries.csv` in their topic folder.
 
 | Dataset | Rows | Columns | Purpose |
 | --- | --- | --- | --- |
@@ -191,6 +177,7 @@ All datasets are included in the repository; no separate download is needed. Pol
 | [Position_Salaries.csv](04-polynomial-regression/Position_Salaries.csv) | 10 | `Position`, `Level`, `Salary` | Explore linear and polynomial salary prediction from position level |
 | [Position_Salaries.csv (SVR)](05-support-vector-regression/Position_Salaries.csv) | 10 | `Position`, `Level`, `Salary` | Practice feature and target scaling for support vector regression |
 | [Position_Salaries.csv (decision tree)](06-decision-tree-regression/Position_Salaries.csv) | 10 | `Position`, `Level`, `Salary` | Explore decision tree salary predictions |
+| [Position_Salaries.csv (random forest)](07-random-forest-regression/Position_Salaries.csv) | 10 | `Position`, `Level`, `Salary` | Explore salary predictions from an ensemble of decision trees |
 
 `Data.csv` contains one missing age and one missing salary, which the preprocessing notebook fills using column means.
 
