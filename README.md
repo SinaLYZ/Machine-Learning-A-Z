@@ -6,43 +6,47 @@ A collection of Python notebooks and datasets for learning machine learning step
 
 | Topic | Contents | Status |
 | --- | --- | --- |
-| [Data preprocessing](01-data-preprocessing/data_preprocessing.ipynb) | Missing values, categorical encoding, train/test splitting, and feature scaling | Notebook available |
-| [Simple linear regression](regression/02-simple-linear-regression/simple_linear_regression.ipynb) | Predicting salary from experience, with test-set R²/MAE/RMSE, the fitted equation, and a residual plot | Notebook available |
-| [Multiple linear regression](regression/03-multiple-linear-regression/multiple_linear_regression.ipynb) | Predicting startup profit from spending and state, with EDA, test-set metrics, a statsmodels significance summary, a VIF multicollinearity check, and backward elimination | Notebook available |
-| [Polynomial regression](regression/04-polynomial-regression/polynomial_regression.ipynb) | Comparing linear and degree-4 polynomial salary predictions and visualizing fitted curves | Notebook available |
-| [Support vector regression (SVR)](regression/05-support-vector-regression/support_vector_regression.ipynb) | Scaling features and targets, fitting an RBF kernel model, and predicting salaries | Notebook available |
-| [Decision tree regression](regression/06-decision-tree-regression/decision_tree_regression.ipynb) | Fitting a decision tree to position salaries and visualizing piecewise-constant predictions | Notebook available |
-| [Random forest regression](regression/07-random-forest-regression/random_forest_regression.ipynb) | Combining 10 decision trees to predict position salaries and visualizing the ensemble's predictions | Notebook available |
-| [Regression model selection](regression/08-regression-model-selection/) | Comparing regression models | Notebooks available |
-| [Logistic regression](classification/09-logistic-regression/logistic_regression.ipynb) | Classification with logistic regression | Notebook available |
+| [Data preprocessing](01-DataPreprocessing/data_preprocessing.ipynb) | Missing values, categorical encoding, train/test splitting, and feature scaling | Notebook available |
+| [Simple linear regression](02-RegressionModels/02-simple-linear-regression/simple_linear_regression.ipynb) | Predicting salary from experience and plotting training/test data | Notebook available |
+| [Multiple linear regression](02-RegressionModels/03-multiple-linear-regression/multiple_linear_regression.ipynb) | Encoding state and predicting startup profit from multiple features | Notebook available |
+| [Polynomial regression](02-RegressionModels/04-polynomial-regression/polynomial_regression.ipynb) | Comparing linear and degree-4 polynomial salary predictions | Notebook available |
+| [Support vector regression (SVR)](02-RegressionModels/05-support-vector-regression/support_vector_regression.ipynb) | Scaling features and targets and fitting an RBF kernel model | Notebook available |
+| [Decision tree regression](02-RegressionModels/06-decision-tree-regression/decision_tree_regression.ipynb) | Predicting position salaries with a decision tree | Notebook available |
+| [Random forest regression](02-RegressionModels/07-random-forest-regression/random_forest_regression.ipynb) | Predicting position salaries with 10 decision trees | Notebook available |
+| [Regression model selection](02-RegressionModels/08-regression-model-selection/) | Comparing five regression models using test-set R^2 | Notebooks available |
+| [Additional model-selection notebooks](03-Regression%20Model%20Selection/) | The same five model types, with dataset placeholders in four notebooks | Dataset filenames need configuration |
+| [Logistic regression](04-Classification/09-logistic-regression/logistic_regression.ipynb) | Predicting purchases and plotting decision boundaries | Notebook available |
+| [K-nearest neighbors (K-NN)](04-Classification/10-K-NN/k_nearest_neighbors.ipynb) | Classifying purchases with five neighbors, a confusion matrix, and accuracy | Notebook available |
 
 ## Project structure
 
 ```text
 Machine-Learning-A-Z/
-├── 01-data-preprocessing/
-│   ├── Data.csv
-│   └── data_preprocessing.ipynb
-├── regression/
-│   ├── 02-simple-linear-regression/
-│   ├── 03-multiple-linear-regression/
-│   ├── 04-polynomial-regression/
-│   ├── 05-support-vector-regression/
-│   ├── 06-decision-tree-regression/
-│   ├── 07-random-forest-regression/
-│   └── 08-regression-model-selection/
-├── classification/
-│   └── 09-logistic-regression/
-├── requirements.txt
-├── LICENSE
-└── README.md
+|-- 01-DataPreprocessing/
+|   |-- Data.csv
+|   `-- data_preprocessing.ipynb
+|-- 02-RegressionModels/
+|   |-- 02-simple-linear-regression/
+|   |-- 03-multiple-linear-regression/
+|   |-- 04-polynomial-regression/
+|   |-- 05-support-vector-regression/
+|   |-- 06-decision-tree-regression/
+|   |-- 07-random-forest-regression/
+|   `-- 08-regression-model-selection/
+|-- 03-Regression Model Selection/
+|-- 04-Classification/
+|   |-- 09-logistic-regression/
+|   `-- 10-K-NN/
+|-- requirements.txt
+|-- LICENSE
+`-- README.md
 ```
 
 Each topic folder contains its notebooks and datasets. Data preprocessing is shared by regression and classification, so it stays at the repository root.
 
 ## Getting started
 
-Requires Python 3. Dependency versions are pinned in `requirements.txt`.
+Use Python 3.10 or newer with the pinned dependencies. Dependency versions are pinned in `requirements.txt`.
 
 From the repository root, create a virtual environment:
 
@@ -71,7 +75,7 @@ python -m pip install -r requirements.txt
 python -m jupyterlab
 ```
 
-Open a notebook from the topics table, select the Python kernel from your virtual environment, and run the cells from top to bottom. Start with data preprocessing, then work through simple linear regression, multiple linear regression, polynomial regression, support vector regression, decision tree regression, and random forest regression. Each notebook loads its own dataset and can also be run independently.
+Open a notebook from the topics table, select the Python kernel from your virtual environment, and run the cells from top to bottom. Start with data preprocessing, then work through simple linear regression, multiple linear regression, polynomial regression, support vector regression, decision tree regression, and random forest regression. Then explore regression model selection, logistic regression, and K-NN. Notebooks can be run independently; see the model-selection section for the dataset placeholders that need updating first.
 
 The CSV paths are relative to each notebook's directory. Keep the notebook beside its dataset and ensure its working directory is that topic folder if you encounter a `FileNotFoundError`.
 
@@ -90,29 +94,25 @@ The first notebook demonstrates how to:
 
 ## Simple linear regression
 
-The second notebook uses `Salary_Data.csv` to predict `Salary` from `YearsExperience`:
+This notebook uses `Salary_Data.csv` to predict `Salary` from `YearsExperience`:
 
-1. Split the data into 80% training and 20% test sets with `random_state=0`.
+1. Split the data into two-thirds training and one-third test data with `random_state=0`.
 2. Fit scikit-learn's `LinearRegression` model on the training set.
 3. Predict salaries for the test set.
-4. Report R², MAE, and RMSE on the test set, and print the fitted equation (`Salary = intercept + slope * YearsExperience`).
-5. Plot the training and test observations alongside the fitted regression line, plus a residual plot to sanity-check the linear fit.
-6. Save the trained model to `models/simple_linear_regression.joblib` for reuse outside the notebook.
+4. Plot the training and test observations alongside the fitted regression line.
+
+The current notebook does not report evaluation metrics or export the trained model.
 
 ## Multiple linear regression
 
-The third notebook uses `50_Startups.csv` to predict `Profit` from `R&D Spend`, `Administration`, `Marketing Spend`, and `State`:
+This notebook uses `50_Startups.csv` to predict `Profit` from `R&D Spend`, `Administration`, `Marketing Spend`, and `State`:
 
-1. Explore correlations between the numeric features and profit before modeling.
-2. One-hot encode `State` using `ColumnTransformer` and `OneHotEncoder`, retaining the numeric spending features.
-3. Split the data into 80% training and 20% test sets with `random_state=0`.
-4. Fit a `LinearRegression` model, report test-set R²/MAE/RMSE, and plot actual vs. predicted profit.
-5. Refit with `statsmodels.OLS` to inspect each coefficient's p-value and confidence interval — scikit-learn's `LinearRegression` doesn't expose these.
-6. Check for multicollinearity between the spending features with Variance Inflation Factor (VIF).
-7. Run backward elimination to find which features remain statistically significant once the others are accounted for (R&D Spend, in this dataset).
-8. Save the trained model and fitted encoder to `models/` for reuse outside the notebook.
+1. One-hot encode `State` using `ColumnTransformer` and `OneHotEncoder`, retaining the numeric spending features.
+2. Split the data into 80% training and 20% test sets with `random_state=0`.
+3. Fit a `LinearRegression` model on the training set.
+4. Print test-set predictions beside the actual profits.
 
-The single-example prediction supplies the encoded state columns first, followed by the three spending values. New inputs must follow the same feature order as the training data.
+The current notebook does not include significance tests, backward elimination, or model export.
 
 ## Polynomial regression
 
@@ -160,19 +160,40 @@ The seventh notebook uses `Position_Salaries.csv` to predict salary from positio
 
 Like the other position-level notebooks, this example trains on the whole dataset without a held-out test set. It does not yet report evaluation metrics.
 
+## Regression model selection
+
+The five notebooks in [02-RegressionModels/08-regression-model-selection](02-RegressionModels/08-regression-model-selection/) use the included `Data.csv` to compare multiple linear regression, degree-4 polynomial regression, RBF support vector regression, decision tree regression, and random forest regression.
+
+Each notebook uses an 80/20 train/test split with `random_state=0`, prints predictions beside actual targets, and computes test-set R^2. The SVR notebook fits separate feature and target scalers on the training data and converts predictions back to the original target units.
+
+[03-Regression Model Selection](03-Regression%20Model%20Selection/) contains another set of these notebooks and a copy of the dataset. Its SVR notebook already loads `Data.csv`; the other four use `ENTER_THE_NAME_OF_YOUR_DATASET_HERE.csv`. Replace that placeholder with `Data.csv` to use the included data, or with your own dataset filename. These examples treat all columns except the last as numeric features and the last column as the target.
+
+## Classification
+
+Both classification notebooks use `Social_Network_Ads.csv` to predict `Purchased` from `Age` and `EstimatedSalary`. They split the data into 75% training and 25% test sets with `random_state=0`, fit `StandardScaler` on training features only, and transform the test features with the same scaler.
+
+- **Logistic regression:** Fits `LogisticRegression(random_state=0)`, predicts a purchase for age 30 and estimated salary 87,000, and plots training/test decision boundaries. The current notebook does not report accuracy or a confusion matrix.
+- **K-NN:** Fits `KNeighborsClassifier(n_neighbors=5, metric='minkowski', p=2)` (Euclidean distance), predicts the same example and the test set, reports a confusion matrix and accuracy, and plots training/test decision boundaries.
+
+The decision-boundary plots create dense grids in the original age and salary units. If plotting is slow or uses too much memory, increase the grid step sizes, especially on the salary axis, or skip the plotting cells while exploring predictions and metrics.
+
 ## Datasets
 
 All datasets are included in the repository; no separate download is needed. Polynomial regression, SVR, decision tree regression, and random forest regression each include a copy of `Position_Salaries.csv` in their topic folder.
 
 | Dataset | Rows | Columns | Purpose |
 | --- | --- | --- | --- |
-| [Data.csv](01-data-preprocessing/Data.csv) | 10 | `Country`, `Age`, `Salary`, `Purchased` | Practice handling missing values and categorical features; `Purchased` is the target |
-| [Salary_Data.csv](regression/02-simple-linear-regression/Salary_Data.csv) | 30 | `YearsExperience`, `Salary` | Practice predicting salary from years of experience |
-| [50_Startups.csv](regression/03-multiple-linear-regression/50_Startups.csv) | 50 | `R&D Spend`, `Administration`, `Marketing Spend`, `State`, `Profit` | Practice predicting profit from multiple numeric and categorical features |
-| [Position_Salaries.csv](regression/04-polynomial-regression/Position_Salaries.csv) | 10 | `Position`, `Level`, `Salary` | Explore linear and polynomial salary prediction from position level |
-| [Position_Salaries.csv (SVR)](regression/05-support-vector-regression/Position_Salaries.csv) | 10 | `Position`, `Level`, `Salary` | Practice feature and target scaling for support vector regression |
-| [Position_Salaries.csv (decision tree)](regression/06-decision-tree-regression/Position_Salaries.csv) | 10 | `Position`, `Level`, `Salary` | Explore decision tree salary predictions |
-| [Position_Salaries.csv (random forest)](regression/07-random-forest-regression/Position_Salaries.csv) | 10 | `Position`, `Level`, `Salary` | Explore salary predictions from an ensemble of decision trees |
+| [Data.csv](01-DataPreprocessing/Data.csv) | 10 | `Country`, `Age`, `Salary`, `Purchased` | Practice handling missing values and categorical features; `Purchased` is the target |
+| [Salary_Data.csv](02-RegressionModels/02-simple-linear-regression/Salary_Data.csv) | 30 | `YearsExperience`, `Salary` | Practice predicting salary from years of experience |
+| [50_Startups.csv](02-RegressionModels/03-multiple-linear-regression/50_Startups.csv) | 50 | `R&D Spend`, `Administration`, `Marketing Spend`, `State`, `Profit` | Practice predicting profit from multiple numeric and categorical features |
+| [Position_Salaries.csv](02-RegressionModels/04-polynomial-regression/Position_Salaries.csv) | 10 | `Position`, `Level`, `Salary` | Explore linear and polynomial salary prediction from position level |
+| [Position_Salaries.csv (SVR)](02-RegressionModels/05-support-vector-regression/Position_Salaries.csv) | 10 | `Position`, `Level`, `Salary` | Practice feature and target scaling for support vector regression |
+| [Position_Salaries.csv (decision tree)](02-RegressionModels/06-decision-tree-regression/Position_Salaries.csv) | 10 | `Position`, `Level`, `Salary` | Explore decision tree salary predictions |
+| [Position_Salaries.csv (random forest)](02-RegressionModels/07-random-forest-regression/Position_Salaries.csv) | 10 | `Position`, `Level`, `Salary` | Explore salary predictions from an ensemble of decision trees |
+| [Data.csv (regression model selection)](02-RegressionModels/08-regression-model-selection/Data.csv) | 9,568 | `AT`, `V`, `AP`, `RH`, `PE` | Compare regression models using the first four columns to predict `PE` |
+| [Data.csv (additional model-selection notebooks)](03-Regression%20Model%20Selection/Data.csv) | 9,568 | `AT`, `V`, `AP`, `RH`, `PE` | Included dataset for the additional model-selection notebooks |
+| [Social_Network_Ads.csv (logistic regression)](04-Classification/09-logistic-regression/Social_Network_Ads.csv) | 400 | `Age`, `EstimatedSalary`, `Purchased` | Predict purchases with logistic regression |
+| [Social_Network_Ads.csv (K-NN)](04-Classification/10-K-NN/Social_Network_Ads.csv) | 400 | `Age`, `EstimatedSalary`, `Purchased` | Predict purchases with nearest neighbors |
 
 `Data.csv` contains one missing age and one missing salary, which the preprocessing notebook fills using column means.
 
