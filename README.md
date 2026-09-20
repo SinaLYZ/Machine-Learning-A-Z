@@ -1,18 +1,20 @@
 # Machine-Learning-A-Z
 
-A collection of Python notebooks and datasets for learning machine learning step by step, starting with data preprocessing and progressing to regression.
+A collection of Python notebooks and datasets for learning machine learning step by step, starting with data preprocessing and progressing to regression and classification.
 
 ## Topics and progress
 
 | Topic | Contents | Status |
 | --- | --- | --- |
 | [Data preprocessing](01-data-preprocessing/data_preprocessing.ipynb) | Missing values, categorical encoding, train/test splitting, and feature scaling | Notebook available |
-| [Simple linear regression](02-simple-linear-regression/simple-linear-regression.ipynb) | Predicting salary from experience, with test-set R²/MAE/RMSE, the fitted equation, and a residual plot | Notebook available |
-| [Multiple linear regression](03-multiple-linear-regression/multiple_linear_regression.ipynb) | Predicting startup profit from spending and state, with EDA, test-set metrics, a statsmodels significance summary, a VIF multicollinearity check, and backward elimination | Notebook available |
-| [Polynomial regression](04-polynomial-regression/polynomial_regression.ipynb) | Comparing linear and degree-4 polynomial salary predictions and visualizing fitted curves | Notebook available |
-| [Support vector regression (SVR)](05-support-vector-regression/support_vector_regression.ipynb) | Scaling features and targets, fitting an RBF kernel model, and predicting salaries | Notebook available |
-| [Decision tree regression](06-decision-tree-regression/decision_tree_regression.ipynb) | Fitting a decision tree to position salaries and visualizing piecewise-constant predictions | Notebook available |
-| [Random forest regression](07-random-forest-regression/random_forest_regression.ipynb) | Combining 10 decision trees to predict position salaries and visualizing the ensemble's predictions | Notebook available |
+| [Simple linear regression](regression/02-simple-linear-regression/simple_linear_regression.ipynb) | Predicting salary from experience, with test-set R²/MAE/RMSE, the fitted equation, and a residual plot | Notebook available |
+| [Multiple linear regression](regression/03-multiple-linear-regression/multiple_linear_regression.ipynb) | Predicting startup profit from spending and state, with EDA, test-set metrics, a statsmodels significance summary, a VIF multicollinearity check, and backward elimination | Notebook available |
+| [Polynomial regression](regression/04-polynomial-regression/polynomial_regression.ipynb) | Comparing linear and degree-4 polynomial salary predictions and visualizing fitted curves | Notebook available |
+| [Support vector regression (SVR)](regression/05-support-vector-regression/support_vector_regression.ipynb) | Scaling features and targets, fitting an RBF kernel model, and predicting salaries | Notebook available |
+| [Decision tree regression](regression/06-decision-tree-regression/decision_tree_regression.ipynb) | Fitting a decision tree to position salaries and visualizing piecewise-constant predictions | Notebook available |
+| [Random forest regression](regression/07-random-forest-regression/random_forest_regression.ipynb) | Combining 10 decision trees to predict position salaries and visualizing the ensemble's predictions | Notebook available |
+| [Regression model selection](regression/08-regression-model-selection/) | Comparing regression models | Notebooks available |
+| [Logistic regression](classification/09-logistic-regression/logistic_regression.ipynb) | Classification with logistic regression | Notebook available |
 
 ## Project structure
 
@@ -21,29 +23,22 @@ Machine-Learning-A-Z/
 ├── 01-data-preprocessing/
 │   ├── Data.csv
 │   └── data_preprocessing.ipynb
-├── 02-simple-linear-regression/
-│   ├── Salary_Data.csv
-│   └── simple-linear-regression.ipynb
-├── 03-multiple-linear-regression/
-│   ├── 50_Startups.csv
-│   └── multiple_linear_regression.ipynb
-├── 04-polynomial-regression/
-│   ├── Position_Salaries.csv
-│   └── polynomial_regression.ipynb
-├── 05-support-vector-regression/
-│   ├── Position_Salaries.csv
-│   └── support_vector_regression.ipynb
-├── 06-decision-tree-regression/
-│   ├── Position_Salaries.csv
-│   └── decision_tree_regression.ipynb
-├── 07-random-forest-regression/
-│   ├── Position_Salaries.csv
-│   └── random_forest_regression.ipynb
-├── models/                 # trained models saved by the notebooks (gitignored)
+├── regression/
+│   ├── 02-simple-linear-regression/
+│   ├── 03-multiple-linear-regression/
+│   ├── 04-polynomial-regression/
+│   ├── 05-support-vector-regression/
+│   ├── 06-decision-tree-regression/
+│   ├── 07-random-forest-regression/
+│   └── 08-regression-model-selection/
+├── classification/
+│   └── 09-logistic-regression/
 ├── requirements.txt
 ├── LICENSE
 └── README.md
 ```
+
+Each topic folder contains its notebooks and datasets. Data preprocessing is shared by regression and classification, so it stays at the repository root.
 
 ## Getting started
 
@@ -172,12 +167,12 @@ All datasets are included in the repository; no separate download is needed. Pol
 | Dataset | Rows | Columns | Purpose |
 | --- | --- | --- | --- |
 | [Data.csv](01-data-preprocessing/Data.csv) | 10 | `Country`, `Age`, `Salary`, `Purchased` | Practice handling missing values and categorical features; `Purchased` is the target |
-| [Salary_Data.csv](02-simple-linear-regression/Salary_Data.csv) | 30 | `YearsExperience`, `Salary` | Practice predicting salary from years of experience |
-| [50_Startups.csv](03-multiple-linear-regression/50_Startups.csv) | 50 | `R&D Spend`, `Administration`, `Marketing Spend`, `State`, `Profit` | Practice predicting profit from multiple numeric and categorical features |
-| [Position_Salaries.csv](04-polynomial-regression/Position_Salaries.csv) | 10 | `Position`, `Level`, `Salary` | Explore linear and polynomial salary prediction from position level |
-| [Position_Salaries.csv (SVR)](05-support-vector-regression/Position_Salaries.csv) | 10 | `Position`, `Level`, `Salary` | Practice feature and target scaling for support vector regression |
-| [Position_Salaries.csv (decision tree)](06-decision-tree-regression/Position_Salaries.csv) | 10 | `Position`, `Level`, `Salary` | Explore decision tree salary predictions |
-| [Position_Salaries.csv (random forest)](07-random-forest-regression/Position_Salaries.csv) | 10 | `Position`, `Level`, `Salary` | Explore salary predictions from an ensemble of decision trees |
+| [Salary_Data.csv](regression/02-simple-linear-regression/Salary_Data.csv) | 30 | `YearsExperience`, `Salary` | Practice predicting salary from years of experience |
+| [50_Startups.csv](regression/03-multiple-linear-regression/50_Startups.csv) | 50 | `R&D Spend`, `Administration`, `Marketing Spend`, `State`, `Profit` | Practice predicting profit from multiple numeric and categorical features |
+| [Position_Salaries.csv](regression/04-polynomial-regression/Position_Salaries.csv) | 10 | `Position`, `Level`, `Salary` | Explore linear and polynomial salary prediction from position level |
+| [Position_Salaries.csv (SVR)](regression/05-support-vector-regression/Position_Salaries.csv) | 10 | `Position`, `Level`, `Salary` | Practice feature and target scaling for support vector regression |
+| [Position_Salaries.csv (decision tree)](regression/06-decision-tree-regression/Position_Salaries.csv) | 10 | `Position`, `Level`, `Salary` | Explore decision tree salary predictions |
+| [Position_Salaries.csv (random forest)](regression/07-random-forest-regression/Position_Salaries.csv) | 10 | `Position`, `Level`, `Salary` | Explore salary predictions from an ensemble of decision trees |
 
 `Data.csv` contains one missing age and one missing salary, which the preprocessing notebook fills using column means.
 
