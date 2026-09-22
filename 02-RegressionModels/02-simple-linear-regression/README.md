@@ -31,10 +31,6 @@ A hat indicates an estimated coefficient or a predicted response.
 
 ## Residual sum of squares (RSS)
 
-![OLS fit and residuals for Salary vs. Years of Experience: observed points, the fitted line, and the vertical residual segment at each point.](simple_linear_regression_fit.png)
-
-*Fit on this repo's `Salary_Data.csv`. Each grey vertical segment is one residual $e_i = y_i - \hat y_i$; RSS is the sum of their squared lengths.*
-
 A residual is the difference between an observed response and its fitted value:
 
 $$
