@@ -4,32 +4,28 @@ Simple linear regression models a numerical response using one predictor. Ordina
 
 ## Linear regression in summation form
 
-With $p$ predictors, the general linear regression function is
+A linear regression model assumes that the regression function $E(Y \mid X)$ is linear in the inputs $X_1, \ldots, X_p$. With $p$ predictors, this regression function is written as
 
 $$
 f(\mathbf{x}_i) = \beta_0 + \sum_{j=1}^{p} \beta_j x_{ij}.
 $$
 
-Here, $j$ indexes predictors and $i$ indexes observations. Simple linear regression is the special case $p = 1$:
+The linear model either assumes that the regression function $E(Y \mid X)$ is linear, or that the linear model is a reasonable approximation. Here, $j$ indexes predictors and $i$ indexes observations.
+
+Simple linear regression is the special case $p = 1$:
 
 $$
 f(x_i) = \beta_0 + \sum_{j=1}^{1} \beta_j x_{ij}
 = \beta_0 + \beta_1 x_i.
 $$
 
-The model is linear in its coefficients.
-
-After fitting, the prediction function is
-
-$$
-\hat f(x) = \hat\beta_0 + \hat\beta_1 x,
-\qquad
-\hat y_i = \hat f(x_i).
-$$
-
-A hat indicates an estimated coefficient or a predicted response.
+The model is linear in its coefficients. Once fitted, $\hat y_i = \hat\beta_0 + \hat\beta_1 x_i$ is the predicted response for input $x_i$; a hat denotes an estimated coefficient or a predicted value.
 
 ## Residual sum of squares (RSS)
+
+![OLS fit and residuals for Salary vs. Years of Experience: observed points, the fitted line, and the vertical residual segment at each point.](simple_linear_regression_fit.png)
+
+*Fit on this repo's `Salary_Data.csv`. Each grey vertical segment is one residual $e_i = y_i - \hat y_i$; RSS is the sum of their squared lengths.*
 
 A residual is the difference between an observed response and its fitted value:
 
@@ -54,7 +50,7 @@ OLS chooses the coefficients that minimize this sum:
 
 $$
 (\hat\beta_0, \hat\beta_1)
-= \underset{\beta_0,\beta_1}{\operatorname{arg\,min}}
+= \arg\min_{\beta_0,\beta_1}
 \sum_{i=1}^{n}(y_i - \beta_0 - \beta_1 x_i)^2.
 $$
 
