@@ -14,13 +14,11 @@ Simple linear regression models the relationship between one input variable $x$ 
 - $b_0$: the fitted intercept, the value of $\hat{y}$ when $x=0$. It has the same units as $y$.
 - $b_1$: the fitted slope, the change in $\hat{y}$ for a one-unit increase in $x$. Its units are units of $y$ per unit of $x$.
 - $n$: the number of observations in the training data used to fit the line.
-- $i$: an observation index, ranging from $1$ to $n$.
-- $x_i$: the observed input value for observation $i$.
-- $y_i$: the observed response value for observation $i$.
-- $\hat{y}_i$: the predicted response for observation $i$, calculated as $b_0+b_1x_i$.
-- $e_i$: the residual for observation $i$, calculated as the observed response minus its fitted prediction, $y_i-\hat{y}_i$.
+- $e$: the residual, calculated as the observed response minus its fitted prediction, $y-\hat{y}$.
 - $\bar{x}$: the arithmetic mean of the training input values $x_1,\ldots,x_n$.
 - $\bar{y}$: the arithmetic mean of the training response values $y_1,\ldots,y_n$.
+
+A subscript $i$ identifies a particular training observation, where $i=1,\ldots,n$. This convention applies to $x$, $y$, $\hat{y}$, and $e$ throughout the equations.
 
 The symbol $\sum_{i=1}^{n}$ means to add a quantity over all $n$ training observations. The notation $\min_{b_0,b_1}$ means to choose the intercept and slope that make the following expression as small as possible.
 
@@ -29,9 +27,6 @@ The symbol $\sum_{i=1}^{n}$ means to add a quantity over all $n$ training observ
 $$
 \hat{y} = b_0 + b_1x
 $$
-
-- **$b_0$ — intercept:** predicted response when the input is zero ($x=0$).
-- **$b_1$ — slope:** change in the predicted response for each one-unit increase in the input.
 
 The intercept may have limited practical meaning if $x=0$ falls outside the range of the training inputs or has no meaningful interpretation for the input variable.
 
@@ -55,7 +50,7 @@ $$
 \sum_{i=1}^{n}\left[y_i-(b_0+b_1x_i)\right]^2
 $$
 
-Here, $n$ is the number of training observations. Squaring prevents positive and negative errors from canceling and gives larger errors more weight.
+Squaring prevents positive and negative errors from canceling and gives larger errors more weight.
 
 ### 4. Calculating the slope and intercept
 
