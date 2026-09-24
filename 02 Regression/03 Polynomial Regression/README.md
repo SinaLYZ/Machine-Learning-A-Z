@@ -41,7 +41,7 @@ The derivative on the left measures the instantaneous change in the prediction p
 
 ## Residual sum of squares (RSS)
 
-![Degree-4 polynomial fit of Salary vs. Position Level for Position_Salaries.csv, showing the observed points and the fitted curve.](polynomial_regression_fit.png)
+![Degree-4 polynomial fit of Salary vs. Position Level for Position_Salaries.csv, showing the observed points and the fitted curve.](figures/polynomial_regression_fit.png)
 
 *Fit on this repo's `Position_Salaries.csv` ($n=10$), matching the notebook's `PolynomialFeatures(degree=4)`. The curve is one function of $x$; each vertical gap between a point and the curve is that observation's residual.*
 

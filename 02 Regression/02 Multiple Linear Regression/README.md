@@ -24,7 +24,7 @@ Each coefficient describes an association after accounting for the other predict
 
 ## Residual sum of squares (RSS)
 
-![Actual vs. predicted profit for the multiple regression fit on 50_Startups.csv, with a diagonal line marking perfect prediction.](multiple_linear_regression_fit.png)
+![Actual vs. predicted profit for the multiple regression fit on 50_Startups.csv, with a diagonal line marking perfect prediction.](figures/multiple_linear_regression_fit.png)
 
 *Fit on this repo's `50_Startups.csv` (R&D spend, administration, marketing spend, and one-hot encoded state; $n=50$, $p=5$ predictor columns). Points closer to the diagonal have smaller residuals; RSS is the sum of their squared vertical distances from it.*
 

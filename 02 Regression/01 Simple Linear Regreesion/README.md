@@ -30,7 +30,7 @@ Lowercase $x$ and $y$ denote observed values of the predictor and response. A ha
 
 ## Residual sum of squares (RSS)
 
-<img src="simple_linear_regression_fit.png" alt="Salary versus years of experience, with observed points, the fitted OLS line, and vertical residual segments." width="520">
+<img src="figures/simple_linear_regression_fit.png" alt="Salary versus years of experience, with observed points, the fitted OLS line, and vertical residual segments." width="520">
 
 *Fit on this repo's `Salary_Data.csv`. Each grey vertical segment connects an observed point to the fitted line at the same input value.*
 
