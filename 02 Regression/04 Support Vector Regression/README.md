@@ -1,121 +1,77 @@
 # Support Vector Regression in Python
 
-Support vector regression (SVR) predicts a numerical response while balancing model complexity against prediction errors. Its epsilon-insensitive loss ignores residuals within a chosen tolerance and penalizes the excess beyond it. The [notebook](support_vector_regression.ipynb) applies an RBF kernel model to the included [position salary dataset](Position_Salaries.csv).
+Support vector regression (SVR) extends the support vector approach to a quantitative response. Unlike ordinary, multiple, and polynomial regression, it does not fit by minimizing the residual sum of squares (RSS); it minimizes a different loss that ignores small residuals entirely. ISLP mentions SVR only in a single paragraph, without equations (end of Chapter 9, page 386), so the math below follows ESL, Section 12.3.6.
 
 ## Linear model and loss function
 
-Start with a linear prediction function:
+ESL first writes the same linear model used elsewhere in the book:
 
 ```math
-\Large f(x) = x^{\mathsf T}\beta + \beta_0.
+\Large f(x) = x^T\beta + \beta_0.
 ```
 
 - $x$: the input vector, containing the predictor values for one observation.
 - $f$: the prediction function, which maps an input to a numerical response.
-- $\beta$: the vector of coefficients, or weights, applied to the predictors.
-- $\beta_0$: the intercept, the predicted response when all input values are zero.
-- $\mathsf T$: the transpose symbol; the product here sums each predictor value multiplied by its corresponding coefficient.
+- $\beta$: the vector of coefficients applied to the predictors.
+- $\beta_0$: the intercept, the predicted response when all inputs are zero.
+- $T$: the transpose symbol; the product here adds the input values multiplied by their corresponding coefficients.
 
-With one predictor, this function is a straight line. SVR can also fit curved relationships by using a kernel, described below. The intercept may have limited practical meaning when the all-zero input lies outside the observed data.
+With one predictor, this is a straight line. The coefficients control how predictions change with the inputs, while the intercept shifts the predictions up or down.
 
-The discrepancy between an observation and its prediction is
+To estimate $\beta$ and $\beta_0$, ESL considers minimizing
 
 ```math
-\Large r_i = y_i - f(x_i).
+\Large H(\beta, \beta_0) = \sum_{i=1}^{N} V(y_i - f(x_i)) + \frac{\lambda}{2}\|\beta\|^2,
 ```
 
-Here, $y$ is the observed response and $r$ is the residual. The index $i$ identifies an observation throughout the equations. Positive residuals mean the model underpredicts; negative residuals mean it overpredicts. These differences are measured along the response axis.
+- $H$: the objective minimized during training.
+- $y$: the observed response.
+- $N$: the number of training observations.
+- $i$: an observation index, used consistently for inputs, responses, and the solution weights below.
+- $\sum$: adds the expression over the indicated observations.
+- $\|\beta\|^2$: the sum of the squared coefficients, measuring the squared length of the coefficient vector.
 
-The epsilon-insensitive loss is
+$V$ is a chosen error measure and $\lambda$ is a nonnegative tuning parameter that controls the trade-off between fitting the data and keeping $\beta$ small.
+
+The first term measures prediction discrepancies; the second discourages large coefficients. The intercept is not penalized. Increasing the regularization parameter places more emphasis on smaller coefficients, even if some predictions become less accurate. It is typically chosen by cross-validation.
+
+Support vector regression uses the $\epsilon$-insensitive error measure
 
 ```math
 \Large V_\epsilon(r) =
 \begin{cases}
-0 & \text{if } |r| \leq \epsilon, \\
-|r| - \epsilon & \text{if } |r| > \epsilon.
+0 & \text{if } \vert r \vert < \epsilon, \\
+\vert r \vert - \epsilon & \text{otherwise},
 \end{cases}
 ```
 
-- $V_\epsilon$: the loss assigned to a residual under the chosen tolerance.
-- $\epsilon$: a nonnegative tolerance in response units.
-- $|r|$: the magnitude of the residual, regardless of its sign.
+Here, $r$ is a residual: the observed response minus its prediction. The symbol $\epsilon$ is a nonnegative tolerance in response units, and $\vert r\vert$ is the residual's magnitude regardless of sign.
 
-Imagine a tube extending epsilon units above and below the prediction curve. Points inside the tube or exactly on its boundary have zero loss. Outside the tube, only the excess distance beyond the boundary counts. For example, with epsilon equal to 2, a residual of 1 has zero loss, while a residual of 5 has loss 3.
+The loss ignores residuals smaller than $\epsilon$ in absolute value; only residuals larger than $\epsilon$ contribute. At the boundary, the second branch also gives zero loss.
 
-The tube has total vertical width twice the tolerance. It is a fitting tolerance, not a confidence interval or a guarantee that future observations will fall inside it. Outside the tube, the loss increases linearly rather than quadratically, so large residuals receive less rapidly increasing penalties than under squared-error loss.
-
-To balance fit against model complexity, minimize
-
-```math
-\Large H(\beta,\beta_0)
-= \sum_{i=1}^{N}V_\epsilon\!\left(y_i-f(x_i)\right)
-+ \frac{\lambda}{2}\|\beta\|^2.
-```
-
-- $H$: the training objective minimized when fitting the model.
-- $N$: the number of training observations.
-- $\sum$: adds the terms over the indicated index range.
-- $\lambda$: a positive regularization parameter controlling the penalty on the coefficients.
-- $\|\beta\|^2$: the squared Euclidean norm, equal to the sum of the squared coefficients.
-
-The first term adds the losses outside the tube; the second discourages large coefficients. The intercept is not penalized. For a single linear predictor, shrinking the coefficient makes the line flatter. Increasing regularization gives more weight to this preference, even if it leaves larger residuals outside the tube.
-
-Epsilon and regularization control different aspects of the fit. Epsilon determines which discrepancies are free; regularization determines how much the model prioritizes smaller weights over reducing the remaining discrepancies. Both should be selected using validation data or cross-validation rather than judged only by training fit.
+Imagine a tube extending the tolerance above and below the fitted curve. A point inside this tube incurs no penalty. Outside it, only the excess distance beyond the boundary is counted. For example, with a tolerance of 2, a residual magnitude of 5 contributes a loss of 3. The penalty grows linearly beyond the tube rather than quadratically as in squared-error loss. This tube describes a fitting tolerance, not a confidence interval.
 
 ## Solution and support vectors
 
-The fitted linear coefficient vector can be expressed as a weighted sum of training inputs:
+If $\hat\beta, \hat\beta_0$ minimize $H$, the solution has the form
 
 ```math
-\Large \hat\beta = \sum_{i=1}^{N}a_i x_i.
+\Large \hat\beta = \sum_{i=1}^{N}(\hat\alpha_i^* - \hat\alpha_i)x_i,
+\qquad
+\hat f(x) = \sum_{i=1}^{N}(\hat\alpha_i^* - \hat\alpha_i)\langle x, x_i\rangle + \hat\beta_0,
 ```
 
-A hat marks a fitted quantity. Each $a_i$ is a signed weight learned through the constrained optimization underlying SVR. This notation collects the difference of the two nonnegative dual weights associated with an observation, with their scaling absorbed into the signed weight.
+A hat marks a fitted quantity. The starred and unstarred $\alpha$ symbols label two families of nonnegative optimization weights; the star is a label, not multiplication. The brackets $\langle x,x_i\rangle$ denote an inner product, the sum of products of corresponding input coordinates.
 
-Substituting this expression into the linear model gives
+The weights $\hat\alpha_i, \hat\alpha_i^*$ are nonnegative and solve a constrained quadratic program. Typically only a subset of the values $(\hat\alpha_i^* - \hat\alpha_i)$ are nonzero; the corresponding observations are called the support vectors. As with the support vector classifier, the solution depends on the training inputs only through their inner products $\langle x_i, x_{i'}\rangle$, so the method generalizes to richer feature spaces by replacing the inner product with a kernel.
 
-```math
-\Large \hat f(x)
-= \sum_{i=1}^{N}a_i\langle x_i,x\rangle + \hat\beta_0.
-```
+The first expression writes the fitted coefficient vector as a weighted combination of training inputs. The second substitutes that combination into the prediction function, so each observation contributes according to its signed weight and its inner product with the new input.
 
-The brackets $\langle x_i,x\rangle$ denote an inner product, the sum of products of corresponding input coordinates. Instead of describing predictions directly through one coefficient per predictor, this expression describes them through weighted comparisons with training inputs.
-
-Observations with nonzero signed weights are the **support vectors**. With positive epsilon, points strictly inside the fitted tube have zero weights in the exact optimum. Support vectors can lie on the boundary as well as outside it: a boundary point has zero loss but can still help determine the fit. Thus, support vectors are not limited to observations whose residual magnitudes exceed epsilon.
-
-The fit is often determined by only a subset of the training observations. The remaining observations contribute zero to the prediction sum, although they were still considered during training.
-
-## Kernels and curved predictions
-
-Replace the inner product with a kernel to obtain
-
-```math
-\Large \hat f(x)
-= \sum_{i=1}^{N}a_i K(x_i,x) + \hat\beta_0.
-```
-
-Here, $K$ is a kernel: a function that computes an inner product in a transformed feature space without requiring those transformed coordinates to be constructed explicitly. A linear kernel recovers the previous model. A nonlinear kernel allows a curved fit in the original input space, with regularization controlling the weight norm in the transformed space.
-
-The notebook uses the radial basis function (RBF) kernel:
-
-```math
-\Large K(x_i,x) = \exp\!\left(-\gamma\|x_i-x\|^2\right).
-```
-
-Here, $\gamma$ is a positive parameter controlling how quickly similarity decreases with input distance, and $\exp$ is the exponential function. The norm now measures distance between two input vectors. Nearby inputs have higher similarity; larger gamma makes each training point's contribution more localized, while smaller gamma spreads it over a broader range.
-
-The kernel width, tolerance, and regularization interact. A very flexible fit can follow training details without predicting new observations well. The [scikit-learn SVR formulation](https://scikit-learn.org/1.5/modules/svm.html#regression) gives the corresponding constrained optimization and kernel prediction equations.
-
+Support vectors can lie on the tube boundary as well as outside it; a boundary point can have zero loss and still help determine the fit. Because predictions depend on the observations with nonzero weight differences, observations already strictly inside the tube can have no direct contribution to the fitted prediction sum. This explains how SVR can be less sensitive to observations that are already well predicted than ordinary least squares is.
 ## Connection to this notebook
 
 <img src="figures/support_vector_regression_fit.png" alt="Observed salaries in red and the fitted RBF support vector regression curve in blue, plotted against position level." width="520">
 
-*Saved plot from the notebook, shown in the original position-level and salary units. The epsilon tube is not drawn.*
+*Saved plot from the notebook in the original position-level and salary units. The epsilon tube is not drawn.*
 
-The notebook uses position level to predict salary, excluding the descriptive position name. It standardizes the input and target separately before fitting `SVR(kernel='rbf')`, then predicts salary at level 6.5. The new level must pass through the same input scaler, and the prediction must be inverse-transformed with the target scaler to return to salary units.
-
-Scaling matters because the RBF kernel uses input distances, while epsilon is measured in target units. After target standardization, epsilon describes a tolerance on that standardized scale rather than directly in salary units.
-
-Scikit-learn expresses regularization through `C`, the weight on the loss relative to the coefficient penalty. For the summed-loss objective above, dividing by the regularization parameter gives the equivalent relation $C=1/\lambda$. Larger `C` therefore gives more emphasis to reducing errors outside the tube. This relation assumes the exact normalization shown above.
-
-The notebook fits all 10 observations without a held-out test set. Its plotting grid evaluates the same fitted function at more input values to draw a smooth curve; it does not add training information. The plot illustrates the fit, but evaluation on unseen data is still needed to assess prediction accuracy. When evaluating, fit both scalers only on the training portion of each split.
+The [notebook](support_vector_regression.ipynb) uses an RBF kernel to fit a curved relationship between position level and salary. It scales the input and target separately before fitting, then converts predictions back to salary units. The dense plotting grid makes the fitted curve appear smooth; it does not add training observations. All 10 observations are used for fitting, so this plot illustrates the fit rather than performance on a held-out test set.
