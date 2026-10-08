@@ -1,6 +1,6 @@
 # Machine-Learning-A-Z
 
-A collection of Python notebooks and datasets for learning machine learning step by step, covering data preprocessing, regression, classification, model selection, clustering, and market basket analysis.
+A collection of Python notebooks and datasets for learning machine learning step by step, covering data preprocessing, regression, classification, model selection, clustering, association rules, reinforcement learning, natural language processing, deep learning, and dimensionality reduction.
 
 ## Topics
 
@@ -12,8 +12,11 @@ A collection of Python notebooks and datasets for learning machine learning step
 | [Classification](04%20Classification/) | Logistic regression, K-NN, linear SVM, kernel SVM, naive Bayes, decision tree, random forest |
 | [Classification model selection](05%20Classification%20Model%20Selection/) | Seven classifier templates in notebook and Python script form |
 | [Clustering](06%20Clustering/) | K-means, hierarchical clustering |
-| [Apriori](07%20Apriori/) | Association rules, support, confidence, lift |
-| [Eclat](Eclat/) | Product associations summarized by support; currently uses Apriori |
+| [Association rule learning](07%20Association%20Rule%20Learning/) | Apriori, Eclat example using Apriori results |
+| [Reinforcement learning](08%20Reinforcement%20Learning/) | Upper confidence bound, Thompson sampling |
+| [Natural language processing](09%20Natural%20Language%20Processing/) | Text cleaning, bag of words, review sentiment classification |
+| [Deep learning](10%20Deep%20Learning/) | Artificial neural network, convolutional neural network |
+| [Dimensionality reduction](11%20Dimension%20Reduction/) | PCA, linear discriminant analysis, kernel PCA |
 
 ## Project structure
 
@@ -40,14 +43,26 @@ Machine-Learning-A-Z/
 |-- 06 Clustering/
 |   |-- 01 K-Means Clusterting/
 |   `-- 02 Hierarchical Clustering/
-|-- 07 Apriori/
-|-- Eclat/
+|-- 07 Association Rule Learning/
+|   |-- 01 Apriori/
+|   `-- 02 Eclat/
+|-- 08 Reinforcement Learning/
+|   |-- 01 Upper Confidence Bound/
+|   `-- 02 Thompson Sampling/
+|-- 09 Natural Language Processing/
+|-- 10 Deep Learning/
+|   |-- 01 Artificial Neural Network/
+|   `-- 02 Convolutional Neural Network/
+|-- 11 Dimension Reduction/
+|   |-- 01 Principle Component Analysis (PCA)/
+|   |-- 02 Linear Discriminant Analysis (LDA)/
+|   `-- 03 Kernel PCA/
 |-- requirements.txt
 |-- LICENSE
 `-- README.md
 ```
 
-Numbered folders indicate the learning order; `Eclat/` is currently unnumbered. The tree above preserves the existing folder names. Each topic keeps its notebooks and datasets together with their existing filenames, so relative CSV paths stay the same. Topic explanations live in `README.md`, and supporting images live in `figures/`.
+Numbered folders indicate the learning order. The tree above preserves the existing folder names. Tabular datasets sit beside their notebooks; the CNN uses local image subfolders. Run each notebook from its own folder so relative data paths resolve. Topic explanations live in `README.md`, and supporting images live in `figures/`.
 
 Regression model selection contains five notebooks and its own `Data.csv`. Classification model selection contains seven notebooks, seven Python scripts, and a separate `Data.csv`.
 
@@ -82,13 +97,23 @@ python -m pip install -r requirements.txt
 python -m jupyterlab
 ```
 
-The Apriori and Eclat notebooks also import `apyori`, which is not included in `requirements.txt`. Install it in the same environment before running those notebooks:
+Some topics need packages beyond the core requirements. Install the extras for the notebooks you plan to run in the same environment:
+
+| Topic | Additional packages |
+| --- | --- |
+| Association rule learning | `apyori` |
+| Natural language processing | `nltk` |
+| Deep learning | `tensorflow`, `Pillow` |
+
+For example:
 
 ```sh
-python -m pip install apyori
+python -m pip install apyori nltk tensorflow Pillow
 ```
 
-Open a topic folder from the table above, choose a notebook, select the Python kernel from your virtual environment, and run the cells from top to bottom. Follow preprocessing with regression and classification, then explore model selection, clustering, and market basket analysis. See the notes below for templates and cells that need adjustment before a full run.
+These extra packages are not pinned in `requirements.txt`. The NLP notebook also calls `nltk.download('stopwords')`, which needs network access if the corpus is not already installed. The deep-learning notebooks use TensorFlow/Keras image and model APIs; the core requirements alone do not configure that environment.
+
+Open a topic folder from the table above, choose a notebook, select the Python kernel from your virtual environment, and run the cells from top to bottom. Follow preprocessing with regression and classification, then explore model selection, clustering, association rules, reinforcement learning, NLP, deep learning, and dimensionality reduction. See the notes below for templates and cells that need adjustment before a full run.
 
 The CSV paths are relative to each notebook's directory. Keep the notebook beside its dataset and ensure its working directory is that topic folder if you encounter a `FileNotFoundError`.
 
@@ -186,7 +211,6 @@ The seven classification notebooks use `Social_Network_Ads.csv` to predict `Purc
 
 - **Logistic regression:** Fits `LogisticRegression(random_state=0)`, predicts a purchase for age 30 and estimated salary 87,000, and plots training/test decision boundaries. The current notebook does not report accuracy or a confusion matrix.
 - **K-NN:** Fits `KNeighborsClassifier(n_neighbors=5, metric='minkowski', p=2)` (Euclidean distance), predicts the same example and the test set, reports a confusion matrix and accuracy, and plots training/test decision boundaries.
-
 - **Linear SVM and kernel SVM:** Fit `SVC` with linear and RBF kernels, respectively, and report confusion matrices and accuracy.
 - **Naive Bayes:** Fits `GaussianNB` and reports a confusion matrix and accuracy.
 - **Decision tree:** Fits `DecisionTreeClassifier` with the entropy criterion and `random_state=0`.
@@ -213,15 +237,40 @@ The hierarchical notebook currently passes `affinity='euclidean'` to `Agglomerat
 
 ## Market basket analysis
 
-[Apriori](07%20Apriori/apriori.ipynb) and [Eclat](Eclat/eclat.ipynb) each include a copy of `Market_Basket_Optimisation.csv`, containing 7,501 transactions with up to 20 item slots per row and no header. Both notebooks currently call `apyori.apriori` with minimum support 0.003, confidence 0.2, lift 3, and itemset length 2.
+[Apriori](07%20Association%20Rule%20Learning/01%20Apriori/apriori.ipynb) and [Eclat](07%20Association%20Rule%20Learning/02%20Eclat/eclat.ipynb) each include a copy of `Market_Basket_Optimisation.csv`, containing 7,501 transactions with up to 20 item slots per row and no header. Both notebooks currently call `apyori.apriori` with minimum support 0.003, confidence 0.2, lift 3, and itemset length 2.
 
-The Apriori notebook creates a table of associations with support, confidence, and lift, and selects the ten highest-lift entries. Its standalone `resultsDataFrame` cell refers to an undefined name; the table is actually stored in `resultsinDataFrame`.
+The Apriori notebook creates a table of associations with support, confidence, and lift, and selects the ten highest-lift entries.
 
-The Eclat notebook displays product associations and support. Despite the folder name, its current implementation uses Apriori rather than a separate Eclat algorithm. Both examples convert all 20 slots to strings, including missing slots, so empty entries should be filtered when adapting transaction preparation.
+The Eclat notebook displays product associations and selects the ten entries with highest support. Despite the folder name, its current implementation uses Apriori rather than a separate Eclat algorithm. Both examples convert all 20 slots to strings, including missing slots, so empty entries should be filtered when adapting transaction preparation.
+
+## Reinforcement learning
+
+The [upper confidence bound](08%20Reinforcement%20Learning/01%20Upper%20Confidence%20Bound/upper_confidence_bound.ipynb) and [Thompson sampling](08%20Reinforcement%20Learning/02%20Thompson%20Sampling/thompson_sampling.ipynb) notebooks each use `Ads_CTR_Optimisation.csv` to simulate selecting among 10 advertisements over 10,000 rounds.
+
+Upper confidence bound combines observed average rewards with an exploration bonus. Thompson sampling draws from beta distributions updated with each selected ad's successes and failures. Both accumulate rewards and plot how frequently each ad was selected. These are simulations using the included reward table, not live advertising integrations.
+
+## Natural language processing
+
+The [NLP notebook](09%20Natural%20Language%20Processing/natural_language_processing.ipynb) classifies 1,000 restaurant reviews as liked or not liked. It removes non-letter characters, lowercases text, removes English stopwords while retaining `not`, and applies Porter stemming. `CountVectorizer(max_features=1500)` creates bag-of-words features, followed by an 80/20 split and a Gaussian naive Bayes classifier with a confusion matrix and accuracy score.
+
+The current notebook fits the vocabulary before splitting. For evaluation, split first and fit the vectorizer only on training reviews to avoid using test-set information during feature construction.
+
+## Deep learning
+
+- [Artificial neural network](10%20Deep%20Learning/01%20Artificial%20Neural%20Network/artificial_neural_network.ipynb): Predicts customer churn from `Churn_Modelling.csv`, encodes geography and gender, and scales features after an 80/20 split. The model has two six-unit ReLU hidden layers and a sigmoid output, trained for 100 epochs with Adam and binary cross-entropy. It reports a test confusion matrix and accuracy.
+- [Convolutional neural network](10%20Deep%20Learning/02%20Convolutional%20Neural%20Network/convolutional_neural_network.ipynb): Classifies cat and dog images resized to 64 by 64 pixels. It augments training images, uses two convolution/pooling stages followed by a dense layer and sigmoid output, and trains for 25 epochs. A final cell predicts the class of one image.
+
+The CNN expects `training_set/`, `test_set/`, and `single_prediction/cat_or_dog_1.jpg` inside its topic folder. The training and test folders contain `cats/` and `dogs/` subfolders. Keep these image folders with the notebook when copying the project. The notebook uses `test_set/` as validation data during training, so it is not a separate untouched final evaluation set.
+
+## Dimensionality reduction
+
+Three notebooks use `Wine.csv` to compare [principal component analysis](11%20Dimension%20Reduction/01%20Principle%20Component%20Analysis%20%28PCA%29/principal_component_analysis.ipynb), [linear discriminant analysis](11%20Dimension%20Reduction/02%20Linear%20Discriminant%20Analysis%20%28LDA%29/linear_discriminant_analysis.ipynb), and [RBF kernel PCA](11%20Dimension%20Reduction/03%20Kernel%20PCA/kernel_pca.ipynb).
+
+Each uses an 80/20 split, fits standardization and the dimensionality-reduction transformation on the training set, reduces the inputs to two components, and trains logistic regression. The notebooks report confusion matrices and accuracy and visualize the decision boundaries. LDA uses training class labels when fitting its transformation; PCA and kernel PCA fit without labels.
 
 ## Datasets
 
-All datasets are included in the repository; no separate download is needed. Each of the seven classification topic folders has its own copy of `Social_Network_Ads.csv`. Polynomial regression, SVR, decision tree regression, and random forest regression each include a copy of `Position_Salaries.csv` in their topic folder.
+The tabular datasets listed below are included in the project. The CNN additionally needs the image folders described above, and NLP downloads the NLTK stopword corpus. Each of the seven classification topic folders has its own copy of `Social_Network_Ads.csv`. Polynomial regression, SVR, decision tree regression, and random forest regression each include a copy of `Position_Salaries.csv` in their topic folder.
 
 | Dataset | Rows | Columns | Purpose |
 | --- | --- | --- | --- |
@@ -238,8 +287,13 @@ All datasets are included in the repository; no separate download is needed. Eac
 | [Data.csv (classification model selection)](05%20Classification%20Model%20Selection/Data.csv) | 683 | Sample identifier, nine cell-measurement features, `Class` | Compare classifier templates |
 | [Mall_Customers.csv (K-means)](06%20Clustering/01%20K-Means%20Clusterting/Mall_Customers.csv) | 200 | Customer ID, genre, age, annual income, spending score | Group customers with K-means |
 | [Mall_Customers.csv (hierarchical)](06%20Clustering/02%20Hierarchical%20Clustering/Mall_Customers.csv) | 200 | Customer ID, genre, age, annual income, spending score | Group customers with hierarchical clustering |
-| [Market_Basket_Optimisation.csv (Apriori)](07%20Apriori/Market_Basket_Optimisation.csv) | 7,501 | Up to 20 item slots; no header | Mine product associations |
-| [Market_Basket_Optimisation.csv (Eclat folder)](Eclat/Market_Basket_Optimisation.csv) | 7,501 | Up to 20 item slots; no header | Summarize product associations by support |
+| [Market_Basket_Optimisation.csv (Apriori)](07%20Association%20Rule%20Learning/01%20Apriori/Market_Basket_Optimisation.csv) | 7,501 | Up to 20 item slots; no header | Mine product associations |
+| [Market_Basket_Optimisation.csv (Eclat folder)](07%20Association%20Rule%20Learning/02%20Eclat/Market_Basket_Optimisation.csv) | 7,501 | Up to 20 item slots; no header | Summarize product associations by support |
+| [Ads_CTR_Optimisation.csv (UCB)](08%20Reinforcement%20Learning/01%20Upper%20Confidence%20Bound/Ads_CTR_Optimisation.csv) | 10,000 | Binary rewards for 10 ads | Simulate ad selection with upper confidence bound |
+| [Ads_CTR_Optimisation.csv (Thompson sampling)](08%20Reinforcement%20Learning/02%20Thompson%20Sampling/Ads_CTR_Optimisation.csv) | 10,000 | Binary rewards for 10 ads | Simulate ad selection with Thompson sampling |
+| [Restaurant_Reviews.tsv](09%20Natural%20Language%20Processing/Restaurant_Reviews.tsv) | 1,000 | `Review`, `Liked` | Review sentiment classification |
+| [Churn_Modelling.csv](10%20Deep%20Learning/01%20Artificial%20Neural%20Network/Churn_Modelling.csv) | 10,000 | Customer identifiers, attributes, `Exited` | Customer churn classification |
+| [Wine.csv (PCA)](11%20Dimension%20Reduction/01%20Principle%20Component%20Analysis%20%28PCA%29/Wine.csv) | 178 | 13 numerical features and a class target | Dimensionality reduction and classification; copies also accompany LDA and kernel PCA |
 
 The preprocessing `Data.csv` contains one missing age and one missing salary, which the preprocessing notebook fills using column means.
 
